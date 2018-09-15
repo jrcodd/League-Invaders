@@ -5,11 +5,32 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public static BufferedImage alienImg;
+
+	public static BufferedImage rocketImg;
+
+	public static BufferedImage bulletImg;
+
+	public static BufferedImage spaceImg;
+
+	boolean moveUp;
+	boolean moveDown;
+	boolean moveRight;
+	boolean moveLeft;
 	ObjectManager o;
 	Rocketship r;
 	Timer t;
@@ -26,6 +47,23 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		toStartFont = new Font("Arial", Font.PLAIN, 30);
 		r = new Rocketship(250, 700, 50, 50);
 		o = new ObjectManager(r);
+		try {
+
+			alienImg = ImageIO.read(this.getClass().getResourceAsStream("alien.png"));
+
+			rocketImg = ImageIO.read(this.getClass().getResourceAsStream("rocket.png"));
+
+			bulletImg = ImageIO.read(this.getClass().getResourceAsStream("bullet.png"));
+
+			spaceImg = ImageIO.read(this.getClass().getResourceAsStream("space.png"));
+
+		} catch (IOException e) {
+
+			// TODO Auto-generated catch block
+
+			e.printStackTrace();
+
+		}
 	}
 
 	void drawMenuState(Graphics g) {
@@ -44,8 +82,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	void drawGameState(Graphics g) {
 		g.setColor(Color.BLACK);
 
-		g.fillRect(0, 0, LeagueInvaders.WIDTH, LeagueInvaders.HEIGHT);
+		g.drawImage(GamePanel.spaceImg, 0, 0, LeagueInvaders.WIDTH, LeagueInvaders.HEIGHT, null);
 		o.draw(g);
+
 	}
 
 	void drawEndState(Graphics g) {
@@ -58,7 +97,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		g.setFont(toStartFont);
 		g.setColor(Color.black);
 		g.drawString("Press ENTER to restart", 150, 650);
-		g.drawString("You killed" + " enemies", 178, 450);
+		g.drawString("You killed " + o.GetScore() / 2 + " enemies", 178, 450);
 
 	}
 
@@ -67,11 +106,32 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	}
 
 	void updateGameState() {
+		o.checkBoundaries();
+		if (r.isAlive == false) {
+			currentState = END_STATE;
+		}
 		o.update();
+		o.manageEnemies();
+		o.checkCollision();
+		o.purgeObjects();
+		if (moveUp == true) {
+			r.y -= r.speed;
+
+		}
+		if (moveDown == true) {
+			r.y += r.speed;
+		}
+		if (moveRight == true) {
+			r.x += r.speed;
+		}
+		if (moveLeft == true) {
+			r.x -= r.speed;
+		}
+
 	}
 
 	void updateEndState() {
-
+		o.reset();
 	}
 
 	@Override
@@ -117,13 +177,25 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		System.out.println("ok");
 
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		System.out.println("thing 2");
+		if (currentState == END_STATE) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				r = new Rocketship(250, 700, 50, 50);
+				o = new ObjectManager(r);
+			}
+		}
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+			if (currentState == MENU_STATE) {
+				JOptionPane.showMessageDialog(null,
+						"Use the arrow keys to move and space to shoot. Good luck and dont die!!", "Intsructions",
+						END_STATE);
+			}
+		}
+
 		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 			if (currentState == MENU_STATE) {
 				currentState = GAME_STATE;
@@ -139,25 +211,40 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		}
 
 		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			r.left();
+			moveLeft = true;
+			moveRight = false;
+			moveDown = false;
+			moveUp = false;
+		} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			moveLeft = false;
+			moveRight = true;
+			moveDown = false;
+			moveUp = false;
+		} else if (e.getKeyCode() == KeyEvent.VK_UP) {
+			moveLeft = false;
+			moveRight = false;
+			moveDown = false;
+			moveUp = true;
+		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+			moveLeft = false;
+			moveRight = false;
+			moveDown = true;
+			moveUp = false;
 		}
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			r.right();
-		}
-		if (e.getKeyCode() == KeyEvent.VK_UP) {
-			r.up();
-		}
-		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-			r.down();
-		}
-		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-			o.addProjectile(new Projectile(r.x+ 25, r.y, 10, 10));
+		/*
+		 * else if( e.getKeyCode() != KeyEvent.VK_DOWN){ if(e.getKeyCode() !=
+		 * KeyEvent.VK_UP) { if(e.getKeyCode() != KeyEvent.VK_RIGHT) { if(e.getKeyCode()
+		 * != KeyEvent.VK_LEFT) { moveRight = false; moveLeft = false; moveUp = false;
+		 * moveDown = false; }}}}
+		 */
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+			o.addProjectile(new Projectile(r.x + 25, r.y, 10, 10));
 		}
 
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		System.out.println("done with thing 2");
+
 	}
 }
