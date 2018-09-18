@@ -10,39 +10,21 @@ public class Rocketship extends GameObject {
 
 	void update() {
 		super.update();
-		if(isAlive) {
-			
-	}
-		
+		if (isAlive) {
+
+		}
+
 	}
 
 	void draw(Graphics g) {
-		
-		if(isAlive) {
-			  g.drawImage(GamePanel.rocketImg, x, y, width, height, null);
 
-		
+		if (isAlive) {
+			g.drawImage(GamePanel.rocketImg, x, y, width, height, null);
+
 		}
-		if(isAlive == false) {
-			
+		if (isAlive == false) {
+
 		}
-	}
-
-	void left() {
-		x -= speed;
-
-	}
-
-	void right() {
-		x += speed;
-	}
-
-	void up() {
-		y -= speed;
-	}
-
-	void down() {
-		y += speed;
 	}
 
 }

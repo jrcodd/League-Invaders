@@ -182,20 +182,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (currentState == END_STATE) {
-			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				r = new Rocketship(250, 700, 50, 50);
-				o = new ObjectManager(r);
-			}
-		}
-		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-			if (currentState == MENU_STATE) {
-				JOptionPane.showMessageDialog(null,
-						"Use the arrow keys to move and space to shoot. Good luck and dont die!!", "Intsructions",
-						END_STATE);
-			}
-		}
-
 		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 			if (currentState == MENU_STATE) {
 				currentState = GAME_STATE;
@@ -204,39 +190,47 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 				currentState = END_STATE;
 
 			} else if (currentState == END_STATE) {
-
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					r = new Rocketship(250, 700, 50, 50);
+					o = new ObjectManager(r);
+				}
 				currentState = MENU_STATE;
 
 			}
 		}
 
-		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			moveLeft = true;
-			moveRight = false;
-			moveDown = false;
-			moveUp = false;
-		} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			moveLeft = false;
-			moveRight = true;
-			moveDown = false;
-			moveUp = false;
-		} else if (e.getKeyCode() == KeyEvent.VK_UP) {
-			moveLeft = false;
-			moveRight = false;
-			moveDown = false;
-			moveUp = true;
-		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-			moveLeft = false;
-			moveRight = false;
-			moveDown = true;
-			moveUp = false;
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+			if (currentState == MENU_STATE) {
+				JOptionPane.showMessageDialog(null,
+						"Use the arrow keys to move and space to shoot. Good luck and dont die!!", "Intsructions",
+						END_STATE);
+			}
 		}
-		/*
-		 * else if( e.getKeyCode() != KeyEvent.VK_DOWN){ if(e.getKeyCode() !=
-		 * KeyEvent.VK_UP) { if(e.getKeyCode() != KeyEvent.VK_RIGHT) { if(e.getKeyCode()
-		 * != KeyEvent.VK_LEFT) { moveRight = false; moveLeft = false; moveUp = false;
-		 * moveDown = false; }}}}
-		 */
+
+		if (currentState == GAME_STATE) {
+
+			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+				moveLeft = true;
+				moveRight = false;
+				moveDown = false;
+				moveUp = false;
+			} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				moveLeft = false;
+				moveRight = true;
+				moveDown = false;
+				moveUp = false;
+			} else if (e.getKeyCode() == KeyEvent.VK_UP) {
+				moveLeft = false;
+				moveRight = false;
+				moveDown = false;
+				moveUp = true;
+			} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+				moveLeft = false;
+				moveRight = false;
+				moveDown = true;
+				moveUp = false;
+			}
+		}
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 			o.addProjectile(new Projectile(r.x + 25, r.y, 10, 10));
 		}
@@ -245,6 +239,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-
+		moveUp = false;
+		moveDown = false;
+		moveRight = false;
+		moveLeft = false;
 	}
 }
